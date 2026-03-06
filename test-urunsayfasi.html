@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MILLIONN. | Özel Tasarım</title>
+    <title>MILLIONN. | Dinamik Vitrin</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
         /* Dark Mode Luxury Zemin */
         body { 
@@ -41,10 +43,11 @@
             background: #0a0a0a;
         }
 
+        /* Jilet Gibi Görsel Çerçevesi */
         .product-image {
             width: 100%;
             height: 300px;
-            background-color: #111; /* Buraya ileride GTA 6 / Minecraft look görseli gelecek */
+            background-color: #111; 
             border-radius: 8px;
             margin-bottom: 20px;
             display: flex;
@@ -52,12 +55,14 @@
             justify-content: center;
             color: #444;
             font-weight: 700;
+            overflow: hidden; /* Köşelerden taşmayı engeller */
         }
 
         .product-title {
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
         .product-price {
@@ -96,7 +101,7 @@
             transform: none;
         }
 
-        #loadingText {
+        #statusText {
             margin-top: 15px;
             font-size: 0.9rem;
             color: #888;
@@ -109,31 +114,75 @@
     <div class="header">MILLIONN<span class="dot">.</span></div>
 
     <div class="product-container">
-        <div class="product-image">[ Görsel Alanı ]</div>
-        <div class="product-title">Millionn Özel Tasarım Kolye</div>
-        <div class="product-price">149.90 TL</div>
+        
+        <div id="p-image" class="product-image">Görsel Yükleniyor...</div>
+        
+        <div id="p-title" class="product-title">Ürün Yükleniyor...</div>
+        <div id="p-price" class="product-price">-- TL</div>
 
-        <button id="buyButton" class="buy-btn">Satın Al</button>
-        <div id="loadingText"></div>
+        <button id="buyButton" class="buy-btn" disabled>Satın Al</button>
+        <div id="statusText">Veritabanına bağlanılıyor...</div>
     </div>
 
-    <form id="shopierForm" method="post" action="https://shopier.com/ShowProduct/api_pay.php" style="display: none;"></form>
+    <form id="shopierForm" method="post" action="https://www.shopier.com/ShowProduct/api_pay.php" style="display: none;"></form>
 
-    <script>
+    <script type="module">
+        import { supabase } from "./configs/supabase.js";
+        
+        // Dinamik verileri tutacağımız değişkenler
+        let dinamikUrunAdi = "";
+        let dinamikFiyat = "";
+
+        // 1. SUPABASE'DEN "PRODUCTS" TABLOSUNU ÇEK
+        async function urunuGetir() {
+            try {
+                // Senin 'products' tablosunu çağırıyoruz
+                const { data, error } = await supabase.from('products').select('*').limit(1).single();
+                
+                if (error) throw error;
+
+                // Verileri HTML'e (Ekrana) basıyoruz
+                document.getElementById('p-title').innerText = data.title; 
+                document.getElementById('p-price').innerText = data.price + " TL";
+                
+                // GÖRSELİ EKRANA BASIYORUZ (Jilet gibi oturması için object-fit: cover)
+                if (data.image_url) {
+                    document.getElementById('p-image').innerHTML = `<img src="${data.image_url}" alt="${data.title}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                } else {
+                    document.getElementById('p-image').innerText = "Görsel Yok";
+                }
+                
+                // Butonu aktifleştiriyoruz
+                document.getElementById('buyButton').disabled = false;
+                document.getElementById('statusText').innerText = "Sistem hazır.";
+
+                // Arka kapıya gidecek değişkenleri senin tablona göre dolduruyoruz
+                dinamikUrunAdi = data.title;
+                dinamikFiyat = data.price;
+
+            } catch (error) {
+                console.error("Supabase Hatası:", error);
+                document.getElementById('statusText').innerText = "Ürünler çekilemedi!";
+                document.getElementById('statusText').style.color = "#d90429";
+                document.getElementById('p-image').innerText = "Bağlantı Hatası";
+            }
+        }
+
+        // Fonksiyonu çalıştırıp veriyi ekrana getir
+        urunuGetir();
+
+        // 2. SATIN AL BUTONU VE SHOPIER TETİKLEMESİ
         document.getElementById('buyButton').addEventListener('click', async () => {
             const btn = document.getElementById('buyButton');
-            const status = document.getElementById('loadingText');
-            const shopierForm = document.getElementById('shopierForm');
-
-            // Butona basıldığında lüks bir hissiyat için kullanıcıyı bekletiyoruz
+            const status = document.getElementById('statusText');
+            
             btn.disabled = true;
             btn.innerText = "BAĞLANIYOR...";
-            status.innerText = "Güvenli ödeme altyapısı hazırlanıyor...";
+            status.innerText = "Ödeme altyapısına bağlanılıyor...";
 
-            // Arka kapıya gidecek test müşteri ve ürün verileri
             const orderData = {
-                urunAdi: "Millionn Özel Tasarım Kolye",
-                fiyat: "149.90",
+                urunAdi: dinamikUrunAdi,
+                fiyat: dinamikFiyat,
                 musteriAd: "Emirhan",
                 musteriSoyad: "Test",
                 musteriEmail: "info@millionnstudio.com",
@@ -143,7 +192,6 @@
             };
 
             try {
-                // Netlify motorumuzu tetikliyoruz
                 const response = await fetch('/.netlify/functions/odeme-baslat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -153,9 +201,9 @@
                 if (!response.ok) throw new Error("Sunucu yanıt vermedi.");
                 
                 const shopierPayload = await response.json();
-
-                // Gelen verilerle gizli formu doldurup Shopier'e postluyoruz
+                const shopierForm = document.getElementById('shopierForm');
                 shopierForm.innerHTML = ''; 
+                
                 for (const key in shopierPayload) {
                     if (shopierPayload.hasOwnProperty(key)) {
                         const input = document.createElement('input');
@@ -165,13 +213,13 @@
                         shopierForm.appendChild(input);
                     }
                 }
-
+                
                 status.innerText = "Yönlendiriliyorsunuz...";
-                shopierForm.submit(); // Müşteri Shopier'e uçar!
+                shopierForm.submit(); 
 
             } catch (error) {
-                console.error("Hata:", error);
-                status.innerText = "Bağlantı kurulamadı. Lütfen tekrar deneyin.";
+                console.error("Ödeme Hatası:", error);
+                status.innerText = "Bağlantı hatası!";
                 btn.disabled = false;
                 btn.innerText = "SATIN AL";
             }
