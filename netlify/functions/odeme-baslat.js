@@ -15,8 +15,8 @@ exports.handler = async (event) => {
         const { urunAdi, fiyat, musteriAd, musteriSoyad, musteriEmail, musteriTelefon, musteriAdres, musteriSehir } = data;
 
         // 2. SHOPIER GÜVENLİK ANAHTARLARI (Netlify panelinden çekeceğiz, şimdilik TEST yazıyoruz)
-        const API_KEY = process.env.SHOPIER_API_KEY || "TEST_API_KEY";
-        const API_SECRET = process.env.SHOPIER_API_SECRET || "TEST_API_SECRET";
+        const API_KEY = process.env.SHOPIER_API_KEY || "36bbc90f08e12764b243b4e36fd2e2f7";
+        const API_SECRET = process.env.SHOPIER_API_SECRET || "60082e6b85bd3c627ad86e0961bc561c2a848815706625a4484722f8c9c2784f";
 
         // 3. SİPARİŞ BİLGİLERİNİ HAZIRLA
         // Shopier her sipariş için benzersiz bir numara ister
