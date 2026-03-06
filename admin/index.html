@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontrol Merkezi | Millionn Studio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/img/icons.png">
+
+    <style>
+        :root { --neon-green: #39ff14; --bg-dark: #050505; }
+        body { 
+            margin: 0; padding: 0; background: var(--bg-dark); color: #fff; 
+            font-family: 'Inter', sans-serif; height: 100vh;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+
+        /* Arka Plan Efekti */
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 1;
+        }
+
+        .login-card {
+            width: 100%; max-width: 400px; padding: 40px; background: #0a0a0a;
+            border: 1px solid #1a1a1a; border-radius: 20px; z-index: 10;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;
+        }
+
+        .logo { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-bottom: 40px; }
+        .logo span { color: #fff; } /* Nokta Beyaz */
+
+        .input-group { margin-bottom: 25px; text-align: left; }
+        label { font-family: 'Space Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        
+        input {
+            width: 100%; background: transparent; border: none; border-bottom: 1px solid #222;
+            padding: 12px 0; color: #fff; font-size: 16px; outline: none; transition: 0.3s;
+        }
+        input:focus { border-bottom-color: var(--neon-green); }
+
+        .login-btn {
+            width: 100%; background: #fff; color: #000; border: none; padding: 15px;
+            border-radius: 50px; font-weight: 900; font-size: 14px; cursor: pointer;
+            transition: 0.3s; margin-top: 20px; text-transform: uppercase;
+        }
+        .login-btn:hover { background: var(--neon-green); box-shadow: 0 0 20px rgba(57, 255, 20, 0.4); }
+
+        #error-msg { color: #ff4d4d; font-size: 12px; margin-top: 15px; min-height: 18px; }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+
+    <div class="login-card">
+        <div class="logo">MILLIONN<span>.</span></div>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label>E-POSTA</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="input-group">
+                <label>ŞİFRE</label>
+                <input type="password" id="password" required>
+            </div>
+            
+            <button type="submit" class="login-btn">GİRİŞ YAP</button>
+            <div id="error-msg"></div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { supabase } from "../configs/supabase.js";
+
+        const loginForm = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('error-msg');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.innerText = "Bağlanıyor...";
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                errorMsg.innerText = "Giriş başarısız. Bilgileri kontrol et.";
+            } else {
+                // Clean URL yapısına uygun yönlendirme
+                window.location.href = "dashboard"; 
+            }
+        });
+    </script>
+</body>
+</html>

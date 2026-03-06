@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MILLIONN. | Özel Tasarım</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Dark Mode Luxury Zemin */
+        body { 
+            background-color: #050505; 
+            color: #ffffff; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+        }
+
+        /* Devasa Logotype */
+        .header {
+            margin-top: 40px;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -2px; /* Tight Kerning - Blok duruş */
+        }
+        .dot { color: #ffffff; }
+
+        /* Ürün Konteyneri */
+        .product-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+            text-align: center;
+            max-width: 500px;
+            padding: 40px;
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            background: #0a0a0a;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 300px;
+            background-color: #111; /* Buraya ileride GTA 6 / Minecraft look görseli gelecek */
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+            font-weight: 700;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+            color: #d90429; /* Millionn Kırmızısı */
+        }
+
+        /* Baskın ve Okunaklı Satın Al Butonu */
+        .buy-btn {
+            background-color: #ffffff;
+            color: #050505;
+            font-weight: 900;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            letter-spacing: -0.5px;
+        }
+
+        .buy-btn:hover {
+            background-color: #d90429;
+            color: #ffffff;
+            transform: scale(1.02);
+        }
+
+        .buy-btn:disabled {
+            background-color: #333;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #loadingText {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #888;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">MILLIONN<span class="dot">.</span></div>
+
+    <div class="product-container">
+        <div class="product-image">[ Görsel Alanı ]</div>
+        <div class="product-title">Millionn Özel Tasarım Kolye</div>
+        <div class="product-price">149.90 TL</div>
+
+        <button id="buyButton" class="buy-btn">Satın Al</button>
+        <div id="loadingText"></div>
+    </div>
+
+    <form id="shopierForm" method="post" action="https://shopier.com/ShowProduct/api_pay.php" style="display: none;"></form>
+
+    <script>
+        document.getElementById('buyButton').addEventListener('click', async () => {
+            const btn = document.getElementById('buyButton');
+            const status = document.getElementById('loadingText');
+            const shopierForm = document.getElementById('shopierForm');
+
+            // Butona basıldığında lüks bir hissiyat için kullanıcıyı bekletiyoruz
+            btn.disabled = true;
+            btn.innerText = "BAĞLANIYOR...";
+            status.innerText = "Güvenli ödeme altyapısı hazırlanıyor...";
+
+            // Arka kapıya gidecek test müşteri ve ürün verileri
+            const orderData = {
+                urunAdi: "Millionn Özel Tasarım Kolye",
+                fiyat: "149.90",
+                musteriAd: "Emirhan",
+                musteriSoyad: "Test",
+                musteriEmail: "info@millionnstudio.com",
+                musteriTelefon: "05555555555",
+                musteriSehir: "İzmir",
+                musteriAdres: "Millionn Studio Merkez"
+            };
+
+            try {
+                // Netlify motorumuzu tetikliyoruz
+                const response = await fetch('/.netlify/functions/odeme-baslat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (!response.ok) throw new Error("Sunucu yanıt vermedi.");
+                
+                const shopierPayload = await response.json();
+
+                // Gelen verilerle gizli formu doldurup Shopier'e postluyoruz
+                shopierForm.innerHTML = ''; 
+                for (const key in shopierPayload) {
+                    if (shopierPayload.hasOwnProperty(key)) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = shopierPayload[key];
+                        shopierForm.appendChild(input);
+                    }
+                }
+
+                status.innerText = "Yönlendiriliyorsunuz...";
+                shopierForm.submit(); // Müşteri Shopier'e uçar!
+
+            } catch (error) {
+                console.error("Hata:", error);
+                status.innerText = "Bağlantı kurulamadı. Lütfen tekrar deneyin.";
+                btn.disabled = false;
+                btn.innerText = "SATIN AL";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="description" content="Millionn Studio Manifesto - Vizyon, Ekip ve Hikayemiz.">
+    <title>Hakkında | Millionn Studio</title>
+
+    <link rel="icon" type="image/png" href="assets/img/icons.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2878368346405896" crossorigin="anonymous"></script>
+
+    <style>
+        /* --- TEMEL AYARLAR --- */
+        :root {
+            --neon-green: #39ff14;
+            --bg-dark: #030303;
+        }
+
+        body { 
+            margin: 0; padding: 0; background: var(--bg-dark); color: #fff; 
+            font-family: 'Inter', sans-serif; overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; 
+        }
+
+        /* --- BACKGROUND NOISE --- */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+        }
+
+        /* --- NAVIGASYON --- */
+        .nav-bar {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 30px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; box-sizing: border-box;
+            background: linear-gradient(to bottom, rgba(3,3,3,0.95), transparent);
+        }
+        .back-btn {
+            text-decoration: none; color: #fff; font-family: 'Space Mono', monospace; font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 50px;
+            transition: 0.3s; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            white-space: nowrap; 
+        }
+        .back-btn:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
+        .nav-logo { font-weight: 900; letter-spacing: -1px; font-size: 20px; }
+
+        /* --- CONTAINER --- */
+        .container {
+            max-width: 800px; margin: 0 auto; padding: 160px 20px 100px 20px; position: relative; z-index: 10;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1 {
+            font-size: 80px; font-weight: 900; line-height: 0.9; letter-spacing: -3px; margin-bottom: 40px;
+            color: #fff; text-transform: uppercase;
+        }
+        
+        h2 { 
+            font-size: 32px; font-weight: 700; margin-top: 60px; margin-bottom: 20px; letter-spacing: -1px;
+            color: var(--neon-green); 
+        }
+        
+        p { color: #ccc; font-size: 18px; margin-bottom: 20px; font-weight: 300; }
+        
+        .highlight { color: #fff; font-weight: 600; text-decoration: underline; text-decoration-color: var(--neon-green); text-decoration-thickness: 2px;}
+        
+        .mono-tag { 
+            font-family: 'Space Mono', monospace; color: #666; font-size: 12px; 
+            letter-spacing: 4px; text-transform: uppercase; display: block; margin-bottom: 10px;
+        }
+
+        /* --- GÖRSEL ALANLAR --- */
+        .image-block {
+            width: 100%; height: 450px; margin: 60px 0; border-radius: 20px; overflow: hidden; position: relative;
+            border: 1px solid #222;
+        }
+        .scroll-reveal-img { 
+            width: 100%; height: 100%; 
+            object-fit: cover; object-position: center;
+            filter: grayscale(100%) brightness(0.6); opacity: 0.8;
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: scale(1.1);
+        }
+        .scroll-reveal-img.active {
+            filter: grayscale(0%) brightness(1); opacity: 1; transform: scale(1);
+        }
+        .caption { 
+            position: absolute; bottom: 20px; left: 20px; 
+            font-family: 'Space Mono', monospace; font-size: 10px; 
+            background: var(--neon-green); color: #000; font-weight: 700;
+            padding: 5px 10px; border-radius: 4px;
+        }
+
+        /* --- İMZA ALANI --- */
+        .signature-box {
+            margin-top: 80px; padding-top: 40px; border-top: 1px solid #222;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        .founder { font-size: 14px; color: #fff; font-weight: 700; }
+        .role { color: #666; font-size: 12px; font-family: 'Space Mono', monospace; }
+
+        /* --- FOOTER --- */
+        .footer { text-align: center; padding: 50px 0; border-top: 1px solid #111; margin-top: 60px; color: #444; font-size: 12px; }
+
+        /* --- COOKIE BANNER --- */
+        #cookie-banner {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(10, 10, 10, 0.95); border: 1px solid #333;
+            padding: 15px 25px; border-radius: 50px;
+            display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 9999; opacity: 0; transition: all 0.5s ease;
+            backdrop-filter: blur(10px); width: 90%; max-width: 400px;
+        }
+        #cookie-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .cookie-text { font-size: 12px; color: #bbb; flex: 1; }
+        .cookie-btn {
+            background: #fff; color: #000; border: none; padding: 8px 20px;
+            border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
+        }
+        .cookie-btn:hover { background: var(--neon-green); color: #000; }
+
+        /* --- MEDIA QUERY (MOBİL) --- */
+        @media (max-width: 768px) {
+            .nav-bar { padding: 20px 20px; }
+            .nav-logo { font-size: 18px; }
+            .back-btn { font-size: 11px; padding: 8px 16px; }
+            .container { padding: 120px 20px 60px 20px; }
+            h1 { font-size: 42px; letter-spacing: -2px; margin-bottom: 30px; }
+            h2 { font-size: 24px; margin-top: 40px; }
+            p { font-size: 16px; line-height: 1.5; color: #bbb; }
+            .image-block { height: 280px; margin: 40px 0; }
+            #cookie-banner { bottom: 10px; flex-direction: column; text-align: center; border-radius: 16px; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+
+    <nav class="nav-bar">
+        <div class="nav-logo">MILLIONN<span style="color:#fff">.</span></div>
+        <a href="index" class="back-btn">← ANA SAYFA</a>
+    </nav>
+
+    <div class="container">
+        
+        <span class="mono-tag">MANIFESTO</span>
+        
+        <h1>BİR STÜDYODAN<br><span style="color:var(--neon-green)">FAZLASI.</span></h1>
+
+        <p>Tasarım dünyası değişiyor. Artık sadece "pixel" değil, "vizyon" önemli. <span class="highlight">Millionn Studio</span>, yapay zeka teknolojisini insan yaratıcılığıyla birleştiren, İzmir merkezli yeni nesil bir dijital laboratuvardır.</p>
+        
+        <p>Ben <span class="highlight">Emirhan</span>. Bu hikaye, steril plazalarda değil, evimin bir odasında, gece yarılarına kadar süren render denemeleriyle başladı.</p>
+
+        <div class="image-block">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop" alt="Workspace Vision" class="scroll-reveal-img">
+            <div class="caption">DIGITAL WORKSPACE V1.0</div>
+        </div>
+
+        <h2>AÇIK İNŞA MODELİ.</h2>
+        <p>"Kapalı kapılar ardında" çalışmaya inanmıyorum. <span class="highlight">Build in Public</span> felsefesiyle süreçlerimi, hatalarımı ve başarılarımı şeffaf bir şekilde paylaşıyorum. Millionn, sadece görsel üreten bir yer değil, aynı zamanda bir komünite ve ilham kaynağıdır.</p>
+
+        <h2>EKOSİSTEM.</h2>
+        <p>Millionn Studio, tek bir disipline sığmaz. İki ana kolda ilerliyoruz:</p>
+        <ul style="color:#bbb; font-weight:300; list-style:none; padding:0; font-size: 15px;">
+            <li style="margin-bottom:15px;">✦ <strong style="color:#fff">Millionn Studio:</strong> Burada gördüğünüz görsel deneyler ve prompt mühendisliği.</li>
+            <li>✦ <strong style="color:#fff">Millionn Store:</strong> Dijital estetiğin fiziksel dünyaya yansıması. Yakında çıkacak olan özel tasarım koleksiyonumuz.</li>
+        </ul>
+
+        <p>Eşim ve iş ortağım <span class="highlight">Nehir</span> ile birlikte, global standartlarda, "tok" ve vizyoner bir marka inşa ediyoruz. Geçici trendlerden uzak; kalıcı ve hikayesi olan bir miras bırakma peşindeyiz.</p>
+
+        <div class="signature-box">
+            <div>
+                <div class="founder">Emirhan & Nehir</div>
+                <div class="role">KURUCU ORTAKLAR</div>
+            </div>
+            <div style="font-weight:900; font-size:24px; color:#333; letter-spacing:-2px;">MILLIONN.</div>
+        </div>
+
+    </div>
+
+    <div id="cookie-banner">
+        <div class="cookie-text">Deneyimi iyileştirmek için çerez kullanıyoruz.</div>
+        <button id="accept-cookies" class="cookie-btn">Kabul Et</button>
+    </div>
+
+    <footer class="footer">
+        MILLIONN STUDIO © 2026. IZMIR / TURKIYE
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { rootMargin: "-20% 0px -20% 0px" });
+
+        document.querySelectorAll('.scroll-reveal-img').forEach(img => {
+            observer.observe(img);
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const banner = document.getElementById('cookie-banner');
+            const acceptBtn = document.getElementById('accept-cookies');
+
+            if (!localStorage.getItem('cookiesAccepted')) {
+                setTimeout(() => {
+                    banner.classList.add('show');
+                }, 1500); 
+            }
+
+            acceptBtn.addEventListener('click', () => {
+                banner.classList.remove('show');
+                localStorage.setItem('cookiesAccepted', 'true');
+            });
+        });
+    </script>
+
+</body>
+</html>

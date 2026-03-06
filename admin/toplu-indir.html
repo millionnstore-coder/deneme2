@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionn Admin | Toplu İndirme</title>
+    <link rel="icon" type="image/png" href="../assets/img/icons.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        .app-layout { display: flex; min-height: 100vh; }
+        .menu-item { white-space: nowrap; }
+
+        .content-area { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-dark); display: flex; flex-direction: column; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .page-title { font-size: 24px; color: #fff; letter-spacing: -1px; font-family: 'Inter', sans-serif; font-weight: 900;}
+
+        /* İndirme Merkezi Tasarımı */
+        .download-center {
+            background: #050505; border: 1px solid #1a1a1a; border-radius: 16px;
+            padding: 60px 40px; max-width: 500px; margin: auto; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .download-icon { margin-bottom: 20px; color: #39ff14; }
+        .download-title { font-size: 22px; color: #fff; font-family: 'Inter', sans-serif; font-weight: 900; margin-bottom: 10px; }
+        .download-desc { font-size: 13px; color: #666; font-family: 'Inter', sans-serif; margin-bottom: 40px; line-height: 1.6; }
+        
+        .btn-download {
+            background: #39ff14; color: #000; border: none; padding: 18px 30px;
+            font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 900;
+            border-radius: 12px; cursor: pointer; transition: all 0.3s ease; width: 100%;
+        }
+        .btn-download:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(57, 255, 20, 0.4); }
+        .btn-download:disabled { background: #333; color: #666; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .status-text { margin-top: 25px; color: #f1c40f; font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; height: 20px;}
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <aside class="sidebar">
+            <div class="brand">MILLIONN<span class="dot">.</span></div>
+            
+            <nav class="menu">
+                <a href="tumpromptlar" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    TÜM PROMPTLAR
+                </a>
+                <a href="dashboard" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+                    OLUŞTUR
+                </a>
+                <a href="yeni-urun" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    YENİ ÜRÜN
+                </a>
+            </nav>
+            
+            <div class="user-profile">
+                <div class="avatar">E</div>
+                <div class="info"><span class="name">EMIRHAN</span><span class="role">ADMIN</span></div>
+            </div>
+        </aside>
+
+        <div class="content-area">
+            <div class="page-header">
+                <div class="page-title">YEDEKLEME & İNDİRME MERKEZİ</div>
+            </div>
+
+            <div class="download-center">
+                <svg class="download-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <div class="download-title">TÜM GÖRSELLERİ YEDEKLE</div>
+                <div class="download-desc">Veritabanında bulunan tüm prompt ve ürün görselleri orijinal çözünürlüklerinde tek bir ZIP dosyası olarak indirilecektir.</div>
+                
+                <button id="downloadBtn" class="btn-download">GÖRSELLERİ İNDİR (ZIP)</button>
+                <div id="statusText" class="status-text">SİSTEM HAZIR.</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from "../configs/supabase.js";
+
+        const btn = document.getElementById('downloadBtn');
+        const status = document.getElementById('statusText');
+
+        btn.addEventListener('click', async () => {
+            try {
+                btn.disabled = true;
+                btn.innerText = "VERİTABANI TARANIYOR...";
+                status.innerText = "Görsel linkleri tespit ediliyor...";
+
+                // 1. Prompts tablosundan görselleri çek
+                const { data: prompts, error: err1 } = await supabase.from('prompts').select('title, image_url');
+                if (err1) throw err1;
+
+                // 2. Products tablosundan görselleri çek (Eğer varsa)
+                const { data: products, error: err2 } = await supabase.from('products').select('title, image_url');
+                const allData = [...(prompts || []), ...(products || [])];
+
+                if (allData.length === 0) {
+                    status.innerText = "İndirilecek hiçbir görsel bulunamadı.";
+                    btn.disabled = false;
+                    btn.innerText = "GÖRSELLERİ İNDİR (ZIP)";
+                    return;
+                }
+
+                status.innerText = `${allData.length} görsel bulundu. İndirme başlıyor...`;
+                
+                // JSZip Başlat
+                const zip = new JSZip();
+                const folder = zip.folder("Millionn_Gorseller");
+                
+                let count = 0;
+
+                // 3. Dosyaları tek tek Blob olarak çek ve ZIP'e ekle
+                for (const item of allData) {
+                    if (item.image_url) {
+                        try {
+                            const response = await fetch(item.image_url);
+                            const blob = await response.blob();
+                            
+                            // Dosya uzantısını bul (Genelde png veya jpg)
+                            const ext = item.image_url.split('.').pop().split('?')[0] || 'png';
+                            
+                            // İsimleri bilgisayara uygun güvenli hale getir
+                            const safeName = (item.title || `Gorsel`).replace(/[^a-zA-Z0-9]/g, "_");
+                            const fileName = `${safeName}_${count + 1}.${ext}`;
+
+                            folder.file(fileName, blob);
+                            count++;
+                            status.innerText = `${count} / ${allData.length} görsel ZIP'e eklendi...`;
+                        } catch (e) {
+                            console.error("Görsel indirilemedi:", item.image_url);
+                        }
+                    }
+                }
+
+                status.innerText = "ZIP dosyası sıkıştırılıyor, lütfen bekleyin...";
+                btn.innerText = "SIKIŞTIRILIYOR...";
+
+                // 4. ZIP'i oluştur ve İndir
+                const zipContent = await zip.generateAsync({ type: "blob" });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(zipContent);
+                link.download = `Millionn_Yedek_${new Date().toISOString().split('T')[0]}.zip`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                status.innerText = "İNDİRME BAŞARIYLA TAMAMLANDI!";
+                status.style.color = "#39ff14";
+                btn.innerText = "YENİDEN İNDİR";
+                btn.disabled = false;
+
+            } catch (error) {
+                console.error(error);
+                status.innerText = "BİR HATA OLUŞTU: " + error.message;
+                status.style.color = "#d90429";
+                btn.innerText = "TEKRAR DENE";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionn | Ödeme Testi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #050505; color: #fff; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .checkout-box { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 40px; border-radius: 16px; width: 100%; max-width: 400px; }
+        h2 { font-weight: 900; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 15px; text-align: center; color: #f1c40f;}
+        .product-info { text-align: center; margin-bottom: 30px; }
+        .price { font-size: 24px; color: #39ff14; font-weight: 900; }
+        
+        input { width: 100%; background: transparent; border: 1px solid #333; color: #fff; padding: 12px; margin-bottom: 15px; border-radius: 8px; box-sizing: border-box; font-family: 'Inter', sans-serif;}
+        input:focus { outline: none; border-color: #f1c40f; }
+        
+        button { width: 100%; background: #fff; color: #000; font-weight: 900; border: none; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 16px; font-family: 'Inter', sans-serif; text-transform: uppercase;}
+        button:hover { background: #39ff14; transform: scale(1.02); }
+        button:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+        .status { margin-top: 15px; text-align: center; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-box">
+        <h2>KASA TESTİ</h2>
+        
+        <div class="product-info">
+            <div style="font-weight: 700; color: #ccc;">Millionn Özel Tasarım Kolye</div>
+            <div class="price">149.90 TL</div>
+        </div>
+
+        <input type="text" id="ad" placeholder="Adınız" value="Test">
+        <input type="text" id="soyad" placeholder="Soyadınız" value="Kullanıcı">
+        <input type="email" id="email" placeholder="E-Posta Adresi" value="test@millionnstudio.com">
+        <input type="tel" id="telefon" placeholder="Telefon (05...)" value="05555555555">
+        <input type="text" id="sehir" placeholder="Şehir" value="İzmir">
+        <input type="text" id="adres" placeholder="Açık Adres" value="Alsancak, Test Sokak No:1">
+
+        <button id="payBtn">GÜVENLİ ÖDEME YAP</button>
+        <div id="statusText" class="status">Bağlantı bekleniyor...</div>
+    </div>
+
+    <form id="shopierForm" method="post" action="https://shopier.com/ShowProduct/api_pay.php" style="display: none;">
+    </form>
+
+    <script>
+        const payBtn = document.getElementById('payBtn');
+        const statusText = document.getElementById('statusText');
+        const shopierForm = document.getElementById('shopierForm');
+
+        payBtn.addEventListener('click', async () => {
+            payBtn.disabled = true;
+            statusText.innerText = "Şifreli bağlantı kuruluyor...";
+            statusText.style.color = "#f1c40f";
+
+            // 1. Formdaki verileri topla
+            const orderData = {
+                urunAdi: "Millionn Özel Tasarım Kolye",
+                fiyat: "149.90",
+                musteriAd: document.getElementById('ad').value,
+                musteriSoyad: document.getElementById('soyad').value,
+                musteriEmail: document.getElementById('email').value,
+                musteriTelefon: document.getElementById('telefon').value,
+                musteriSehir: document.getElementById('sehir').value,
+                musteriAdres: document.getElementById('adres').value
+            };
+
+            try {
+                // 2. Netlify Arka Kapımıza (Backend) verileri gönder
+                statusText.innerText = "Shopier imzası alınıyor...";
+                
+                // DİKKAT: .netlify/functions/odeme-baslat yolu Netlify sunucusunda çalışır.
+                const response = await fetch('/.netlify/functions/odeme-baslat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (!response.ok) throw new Error("Sunucu yanıt vermedi.");
+                
+                const shopierPayload = await response.json();
+
+                // 3. Gelen şifreli verilerle Shopier formunu doldur
+                statusText.innerText = "Ödeme sayfasına yönlendiriliyorsunuz...";
+                statusText.style.color = "#39ff14";
+
+                shopierForm.innerHTML = ''; // Formu temizle
+                
+                // JSON içindeki her bir veriyi <input type="hidden"> olarak forma ekle
+                for (const key in shopierPayload) {
+                    if (shopierPayload.hasOwnProperty(key)) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = shopierPayload[key];
+                        shopierForm.appendChild(input);
+                    }
+                }
+
+                // 4. Formu otomatik olarak gönder (Sayfa Shopier'e geçer)
+                shopierForm.submit();
+
+            } catch (error) {
+                console.error("Hata:", error);
+                statusText.innerText = "Bağlantı hatası! Lütfen tekrar deneyin.";
+                statusText.style.color = "#d90429";
+                payBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

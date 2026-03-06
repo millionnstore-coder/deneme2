@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim | Millionn Studio</title>
+    
+    <link rel="icon" type="image/png" href="assets/img/icons.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2878368346405896" crossorigin="anonymous"></script>
+
+    <style>
+        /* --- TEMEL AYARLAR --- */
+        :root {
+            --neon-green: #39ff14;
+            --bg-dark: #030303;
+        }
+
+        body { 
+            margin: 0; padding: 0; background: var(--bg-dark); color: #fff; 
+            font-family: 'Inter', sans-serif; overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- BACKGROUND NOISE --- */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+        }
+
+        /* --- NAVIGASYON --- */
+        .nav-bar {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 30px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; box-sizing: border-box;
+            background: linear-gradient(to bottom, rgba(3,3,3,0.95), transparent);
+        }
+        .back-btn {
+            text-decoration: none; color: #fff; font-family: 'Space Mono', monospace; font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 50px;
+            transition: 0.3s; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            white-space: nowrap;
+        }
+        .back-btn:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
+        .nav-logo { font-weight: 900; letter-spacing: -1px; font-size: 20px; }
+
+        /* --- ANA CONTAINER (GRID) --- */
+        .contact-grid {
+            max-width: 1000px; margin: 0 auto; 
+            min-height: 100vh;
+            display: grid; grid-template-columns: 1fr 1fr; /* İkiye böl */
+            align-items: center;
+            padding: 120px 20px 60px 20px;
+            position: relative; z-index: 10;
+            gap: 80px;
+        }
+
+        /* --- SOL TARAF (BİLGİLER) --- */
+        .info-col { display: flex; flex-direction: column; justify-content: center; }
+
+        h1 {
+            font-size: 60px; font-weight: 900; line-height: 1; letter-spacing: -2px; margin-bottom: 20px;
+            color: #fff; 
+            text-transform: uppercase;
+        }
+        /* Yeşil vurgu için sınıf */
+        .highlight-green { color: var(--neon-green); }
+
+        p.subtitle { color: #aaa; font-size: 18px; max-width: 400px; margin-bottom: 50px; }
+
+        .contact-item { margin-bottom: 30px; }
+        .label { 
+            font-family: 'Space Mono', monospace; color: #666; font-size: 12px; 
+            text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 5px;
+        }
+        .value { 
+            font-size: 20px; color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.2); 
+            padding-bottom: 2px; transition: 0.3s; font-weight: 500;
+        }
+        .value:hover { color: var(--neon-green); border-color: var(--neon-green); }
+
+        /* --- SAĞ TARAF (FORM) --- */
+        .form-col {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 40px; border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group { margin-bottom: 30px; position: relative; }
+        
+        input, textarea {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid #333; color: #fff;
+            padding: 15px 0; font-family: 'Inter', sans-serif; font-size: 16px;
+            transition: 0.3s; outline: none; border-radius: 0;
+        }
+        
+        input:focus, textarea:focus { border-bottom-color: var(--neon-green); }
+        
+        label.input-label {
+            position: absolute; top: 15px; left: 0; color: #666; font-size: 14px;
+            pointer-events: none; transition: 0.3s;
+        }
+
+        /* Input'a odaklanınca label yukarı kaysın */
+        input:focus ~ label.input-label,
+        input:valid ~ label.input-label,
+        textarea:focus ~ label.input-label,
+        textarea:valid ~ label.input-label {
+            top: -10px; font-size: 12px; color: var(--neon-green);
+        }
+
+        /* GÖNDER BUTONU */
+        .submit-btn {
+            background: #fff; color: #000; border: none; padding: 15px 40px;
+            font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700;
+            border-radius: 50px; cursor: pointer; transition: 0.3s; width: 100%;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .submit-btn:hover { background: var(--neon-green); color: #000; }
+
+        /* --- FOOTER --- */
+        .footer { text-align: center; padding: 20px; color: #333; font-size: 12px; position: absolute; bottom: 0; width: 100%; }
+
+        /* --- COOKIE BANNER --- */
+        #cookie-banner {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(10, 10, 10, 0.95); border: 1px solid #333;
+            padding: 15px 25px; border-radius: 50px;
+            display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 9999; opacity: 0; transition: all 0.5s ease;
+            backdrop-filter: blur(10px); width: 90%; max-width: 400px;
+        }
+        #cookie-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .cookie-text { font-size: 12px; color: #bbb; flex: 1; }
+        .cookie-btn {
+            background: #fff; color: #000; border: none; padding: 8px 20px;
+            border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
+        }
+        .cookie-btn:hover { background: var(--neon-green); color: #000; }
+
+        /* --- MOBİL UYUMLULUK --- */
+        @media (max-width: 900px) {
+            .contact-grid { grid-template-columns: 1fr; gap: 60px; padding-top: 100px; padding-bottom: 100px; }
+            h1 { font-size: 42px; }
+            .form-col { padding: 30px 20px; }
+            .nav-bar { padding: 20px; }
+            #cookie-banner { bottom: 10px; flex-direction: column; text-align: center; border-radius: 16px; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+
+    <nav class="nav-bar">
+        <div class="nav-logo">MILLIONN<span style="color:#fff">.</span></div>
+        <a href="index" class="back-btn">← ANA SAYFA</a>
+    </nav>
+
+    <div class="contact-grid">
+        
+        <div class="info-col">
+            <h1>YENİ BİR<br><span class="highlight-green">HİKAYE.</span></h1>
+            <p class="subtitle">İş birliği, proje teklifleri veya sadece tanışmak için. Vizyoner fikirlere her zaman açığız.</p>
+
+            <div class="contact-item">
+                <span class="label">E-MAIL</span>
+                <a href="mailto:info@millionnstudio.com" class="value">info@millionnstudio.com</a>
+            </div>
+
+            <div class="contact-item">
+                <span class="label">STUDIO</span>
+                <span class="value" style="border:none; cursor: default;">İzmir, Türkiye</span>
+            </div>
+
+            <div class="contact-item">
+                <span class="label">SOCIAL</span>
+                <a href="https://instagram.com/millionnstudio" target="_blank" class="value">@millionnstudio</a>
+            </div>
+        </div>
+
+        <div class="form-col">
+            <form name="contact" method="POST" netlify>
+                
+                <div class="form-group">
+                    <input type="text" name="name" required>
+                    <label class="input-label">Adınız Soyadınız</label>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" name="email" required>
+                    <label class="input-label">E-Posta Adresiniz</label>
+                </div>
+
+                <div class="form-group">
+                    <textarea name="message" rows="4" required></textarea>
+                    <label class="input-label">Mesajınız / Projeniz</label>
+                </div>
+
+                <button type="submit" class="submit-btn">GÖNDER</button>
+            </form>
+        </div>
+
+    </div>
+
+    <div id="cookie-banner">
+        <div class="cookie-text">Deneyimi iyileştirmek için çerez kullanıyoruz.</div>
+        <button id="accept-cookies" class="cookie-btn">Kabul Et</button>
+    </div>
+
+    <footer class="footer">
+        © 2026 MILLIONN STUDIO
+    </footer>
+
+    <script>
+        // --- COOKIE MANTIĞI ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const banner = document.getElementById('cookie-banner');
+            const acceptBtn = document.getElementById('accept-cookies');
+    
+            if (!localStorage.getItem('cookiesAccepted')) {
+                setTimeout(() => {
+                    banner.classList.add('show');
+                }, 1000);
+            }
+    
+            acceptBtn.addEventListener('click', () => {
+                banner.classList.remove('show');
+                localStorage.setItem('cookiesAccepted', 'true');
+            });
+        });
+    </script>
+
+</body>
+</html>

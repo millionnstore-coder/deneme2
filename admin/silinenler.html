@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionn Admin | SİLİNENLER</title>
+    <link rel="icon" type="image/png" href="../assets/img/icons.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .app-layout { display: flex; min-height: 100vh; }
+        .menu-item { white-space: nowrap; } /* Yazının alt satıra düşmesini engeller */
+
+        .content-area { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-dark); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .page-title { font-size: 24px; color: #d90429; letter-spacing: -1px; }
+
+        .prompt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        /* Kart Stilleri */
+        .prompt-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; opacity: 0.7; transition: 0.3s; }
+        .prompt-card:hover { opacity: 1; border-color: #d90429; transform: translateY(-3px); }
+        .card-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; background: #111; display: block; filter: grayscale(100%); transition: 0.3s; }
+        .prompt-card:hover .card-img { filter: grayscale(0%); }
+        .card-info { padding: 15px; }
+        .card-title { font-size: 13px; color: #fff; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 10px; color: #666; display: flex; justify-content: space-between; border-top: 1px solid #222; padding-top: 8px; }
+        .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; opacity: 0; transition: 0.2s; z-index: 10; }
+        .prompt-card:hover .card-actions { opacity: 1; }
+        .icon-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.9); border: 1px solid #333; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .restore-btn:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); transform: scale(1.1); }
+        .delete-btn:hover { background: #d90429; color: #fff; border-color: #d90429; transform: scale(1.1); }
+        .empty-state { grid-column: 1 / -1; text-align: center; color: #444; margin-top: 50px; font-size: 14px; }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 999; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: #0a0a0a; border: 1px solid #333; padding: 30px; border-radius: 16px; width: 350px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); transform: scale(0.9); transition: 0.3s; }
+        .modal-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 24px; }
+        .modal-title { font-size: 18px; color: #fff; margin-bottom: 10px; }
+        .modal-desc { font-size: 12px; color: #888; margin-bottom: 25px; line-height: 1.5; }
+        .modal-buttons { display: flex; gap: 10px; }
+        .btn-modal { flex: 1; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 900; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-cancel { background: #1a1a1a; color: #fff; border: 1px solid #333; }
+        .btn-confirm { color: #fff; } 
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <aside class="sidebar">
+            <div class="brand">MILLIONN<span class="dot">.</span></div>
+            
+            <nav class="menu">
+                <a href="tumpromptlar" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    TÜM PROMPTLAR
+                </a>
+                
+                <a href="dashboard" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                        <path d="M12 8v8"></path>
+                        <path d="M8 12h8"></path>
+                    </svg>
+                    OLUŞTUR
+                </a>
+
+                <a href="yeni-urun" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    YENİ ÜRÜN
+                </a>
+
+                <a href="silinenler" class="menu-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    SİLİNENLER
+                </a>
+
+                <a href="taslaklar" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    TASLAKLAR
+                </a>
+
+                <a href="analiz" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                    </svg>
+                    ANALİZ
+                </a>
+            </nav>
+            
+            <div class="user-profile">
+                <div class="avatar">E</div>
+                <div class="info">
+                    <span class="name">EMIRHAN</span>
+                    <span class="role">ADMIN</span>
+                </div>
+            </div>
+        </aside>
+
+        <div class="content-area">
+            <div class="page-header">
+                <div class="page-title">ÇÖP KUTUSU</div>
+                <button onclick="emptyTrash()" style="background: transparent; color: #666; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: 900;">TÜMÜNÜ SİL</button>
+            </div>
+            <div class="prompt-grid" id="deletedGrid">
+                <div class="empty-state">YÜKLENİYOR...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="actionModal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon">⚠️</div>
+            <div class="modal-title" id="modalTitle">BAŞLIK</div>
+            <div class="modal-desc" id="modalDesc">Açıklama</div>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-cancel" onclick="closeModal()">VAZGEÇ</button>
+                <button class="btn-modal btn-confirm" id="confirmActionBtn">ONAYLA</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from "../configs/supabase.js";
+        const grid = document.getElementById('deletedGrid');
+        const modal = document.getElementById('actionModal');
+        const mIcon = document.getElementById('modalIcon');
+        const mTitle = document.getElementById('modalTitle');
+        const mDesc = document.getElementById('modalDesc');
+        const mBtn = document.getElementById('confirmActionBtn');
+        let currentAction = null; let currentId = null;
+
+        async function fetchDeleted() {
+            try {
+                const { data, error } = await supabase.from('prompts').select('*').eq('status', 'deleted').order('created_at', { ascending: false });
+                if (error) throw error;
+                if (!data || data.length === 0) { grid.innerHTML = '<div class="empty-state">ÇÖP KUTUSU BOŞ.</div>'; return; }
+                grid.innerHTML = '';
+                data.forEach(item => {
+                    const card = document.createElement('div'); card.className = 'prompt-card';
+                    card.innerHTML = `<div class="card-actions"><div class="icon-btn restore-btn" title="Geri Yükle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6"/></svg></div><div class="icon-btn delete-btn" title="Kalıcı Sil"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div></div><img src="${item.image_url}" class="card-img"><div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>SİLİNDİ</span></div></div>`;
+                    card.querySelector('.restore-btn').onclick = () => openModal('restore', item.id);
+                    card.querySelector('.delete-btn').onclick = () => openModal('delete', item.id);
+                    grid.appendChild(card);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        window.openModal = (action, id) => {
+            currentAction = action; currentId = id; modal.style.display = 'flex';
+            setTimeout(() => { modal.querySelector('.modal-box').style.transform = 'scale(1)'; }, 10);
+            if (action === 'restore') { mIcon.innerHTML = '♻️'; mIcon.style.background = 'rgba(57, 255, 20, 0.1)'; mIcon.style.color = '#39ff14'; mIcon.style.border = '1px solid rgba(57, 255, 20, 0.2)'; mTitle.innerText = "GERİ YÜKLE?"; mDesc.innerText = "Prompt tekrar yayına alınacak."; mBtn.innerText = "EVET, GERİ YÜKLE"; mBtn.style.background = '#39ff14'; mBtn.style.color = '#000'; } 
+            else { mIcon.innerHTML = '💥'; mIcon.style.background = 'rgba(217, 4, 41, 0.1)'; mIcon.style.color = '#d90429'; mIcon.style.border = '1px solid rgba(217, 4, 41, 0.2)'; mTitle.innerText = "KALICI SİL?"; mDesc.innerText = "Veri tamamen yok olacak."; mBtn.innerText = "EVET, YOK ET"; mBtn.style.background = '#d90429'; mBtn.style.color = '#fff'; }
+        }
+        window.closeModal = () => { modal.style.display = 'none'; currentAction = null; currentId = null; }
+
+        mBtn.onclick = async () => {
+            if (!currentId) return; mBtn.innerText = "İŞLENİYOR...";
+            try {
+                if (currentAction === 'restore') await supabase.from('prompts').update({ status: 'active' }).eq('id', currentId);
+                else await supabase.from('prompts').delete().eq('id', currentId);
+                closeModal(); fetchDeleted();
+            } catch (err) { alert(err.message); closeModal(); }
+        }
+        window.emptyTrash = async () => { if(confirm("DİKKAT! ÇÖPTEKİ HER ŞEY SİLİNECEK!")) { await supabase.from('prompts').delete().eq('status', 'deleted'); fetchDeleted(); } }
+        fetchDeleted();
+    </script>
+</body>
+</html>

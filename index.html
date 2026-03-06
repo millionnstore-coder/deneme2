@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Millionn Studio - AI Prompt Library & Design Resources.">
+    <title>Millionn Studio | AI & Design</title>
+    
+    <link rel="icon" type="image/png" href="assets/img/icons.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2878368346405896" crossorigin="anonymous"></script>
+
+    <style>
+        /* --- GENEL AYARLAR --- */
+        :root {
+            --bg-dark: #050505;
+            --text-main: #ffffff;
+            --neon-green: #39ff14;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark); color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh; width: 100%;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; 
+            padding: 30px 6%; 
+            display: flex; justify-content: flex-start; align-items: center;
+            gap: 60px; 
+            z-index: 200; box-sizing: border-box;
+            background: linear-gradient(180deg, #050505 0%, rgba(5,5,5,0) 100%);
+        }
+        
+        .brand-logo { 
+            font-size: 24px; font-weight: 900; letter-spacing: -1px; 
+            color: #fff; text-decoration: none; position: relative; z-index: 201; 
+        }
+        
+        .nav-links { display: flex; gap: 30px; }
+        
+        .nav-link { 
+            text-decoration: none; color: #888; cursor: pointer;
+            font-family: 'Space Mono', monospace; font-size: 12px; 
+            text-transform: uppercase; transition: 0.3s; position: relative; 
+        }
+        .nav-link:hover { color: var(--neon-green); text-shadow: 0 0 10px rgba(57, 255, 20, 0.4); }
+
+        /* Hamburger & Mobil Menü */
+        .hamburger { display: none; flex-direction: column; gap: 6px; cursor: pointer; z-index: 201; margin-left: auto; }
+        .bar { width: 30px; height: 2px; background-color: #fff; transition: 0.4s; }
+        
+        .mobile-menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #050505;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 40px;
+            transform: translateY(-100%); transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1); z-index: 150;
+        }
+        .mobile-menu-overlay.active { transform: translateY(0); }
+        .mobile-link { 
+            font-family: 'Inter', sans-serif; font-weight: 900; font-size: 32px; cursor: pointer;
+            color: #fff; text-decoration: none; text-transform: uppercase; 
+            opacity: 0; transform: translateY(20px); transition: 0.4s; 
+        }
+        .mobile-link:hover { color: var(--neon-green); }
+        .mobile-menu-overlay.active .mobile-link { opacity: 1; transform: translateY(0); }
+        .mobile-menu-overlay.active .mobile-link:nth-child(1) { transition-delay: 0.2s; }
+        .mobile-menu-overlay.active .mobile-link:nth-child(2) { transition-delay: 0.3s; }
+        .mobile-menu-overlay.active .mobile-link:nth-child(3) { transition-delay: 0.4s; }
+        .mobile-menu-overlay.active .mobile-link:nth-child(4) { transition-delay: 0.5s; }
+
+
+        /* --- DİNAMİK DUVAR SİSTEMİ --- */
+        .wall-container {
+            position: absolute; top: -25%; right: -2%; 
+            width: 65%; height: 150%;
+            display: flex; justify-content: center; gap: 20px;
+            transform: rotate(-10deg); opacity: 1; z-index: 0; pointer-events: none;
+        }
+
+        .wall-column {
+            display: flex; flex-direction: column; gap: 20px; width: 25%;
+            animation: scrollUp 60s linear infinite;
+        }
+        .wall-column:nth-child(even) {
+            animation: scrollDown 70s linear infinite; margin-top: -100px;
+        }
+
+        .wall-overlay {
+            position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+            z-index: 1; pointer-events: none;
+            background: linear-gradient(90deg, #050505 20%, rgba(5,5,5,0.6) 45%, rgba(5,5,5,0) 100%);
+        }
+
+        .wall-item {
+            width: 100%; aspect-ratio: 9 / 16; 
+            border-radius: 12px; overflow: hidden; position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); background: #111;
+        }
+        
+        /* --- RENK DEĞİŞİMİ BURADA YAPILDI --- */
+        .wall-item img {
+            width: 100%; height: 100%; object-fit: cover; 
+            opacity: 0.5; /* Biraz daha şeffaf ki yazılar okunsun */
+            transition: 0.3s; 
+            filter: grayscale(0%); /* SİYAH BEYAZ FİLTRESİ KALDIRILDI (RENKLİ OLDU) */
+        }
+
+
+        /* --- İÇERİK ALANI --- */
+        .content-container {
+            position: absolute; top: 50%; left: 6%; 
+            transform: translateY(-50%); z-index: 10; max-width: 650px; text-align: left;
+        }
+
+        h1 {
+            font-size: 80px; line-height: 0.95; font-weight: 900;
+            margin: 0 0 30px 0; letter-spacing: -3px; color: #fff;
+        }
+
+        .highlight-text { 
+            color: var(--neon-green); 
+            text-shadow: 0 0 20px rgba(57, 255, 20, 0.4), 0 0 50px rgba(57, 255, 20, 0.2);
+            display: block; margin-top: 5px;
+        }
+
+        p.subtitle {
+            font-size: 18px; color: #ccc; margin: 0 0 40px 0;
+            font-weight: 300; line-height: 1.6; max-width: 450px;
+        }
+
+        /* CTA BUTTON */
+        .cta-btn {
+            position: relative; display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 35px;
+            background: #ffffff; color: #000000; text-decoration: none;
+            font-family: 'Inter', sans-serif; font-weight: 800; font-size: 13px; letter-spacing: 0px;
+            border-radius: 50px; overflow: hidden; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        .cta-btn::before { 
+            content: ''; position: absolute; top: 0; left: 0; width: 0%; height: 100%; 
+            background: var(--neon-green); z-index: 0; 
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); 
+        }
+        .cta-btn span, .cta-btn svg { position: relative; z-index: 1; transition: all 0.4s ease; }
+        .cta-btn:hover { 
+            color: #000000; padding-right: 45px; transform: translateY(-2px); 
+            box-shadow: 0 0 40px rgba(57, 255, 20, 0.6); 
+        }
+        .cta-btn:hover::before { width: 100%; }
+        .cta-btn:hover svg { transform: translateX(5px); }
+
+        /* --- SOSYAL İKONLAR --- */
+        .socials { position: absolute; bottom: 40px; left: 6%; display: flex; gap: 25px; z-index: 20; }
+        .social-icon { width: 24px; height: 24px; fill: #aaa; transition: 0.3s; cursor: pointer; }
+        .social-icon:hover { fill: var(--neon-green); transform: translateY(-3px); }
+
+        /* --- COOKIE BANNER --- */
+        #cookie-banner {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(10, 10, 10, 0.95); border: 1px solid #333;
+            padding: 15px 25px; border-radius: 50px;
+            display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 9999; opacity: 0; transition: all 0.5s ease;
+            backdrop-filter: blur(10px); width: 90%; max-width: 400px;
+        }
+        #cookie-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .cookie-text { font-size: 12px; color: #bbb; flex: 1; }
+        .cookie-btn {
+            background: #fff; color: #000; border: none; padding: 8px 20px;
+            border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
+        }
+        .cookie-btn:hover { background: var(--neon-green); color: #000; }
+
+        /* --- HAYALET FOOTER --- */
+        #ghostFooter {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 15px 6%;
+            display: flex; justify-content: space-between; align-items: center;
+            box-sizing: border-box; z-index: 190;
+            transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        #ghostFooter.visible { transform: translateY(0); }
+        .footer-text { font-family: 'Space Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; }
+        .footer-link { color: #555; text-decoration: none; margin-left: 20px; transition: 0.3s; }
+        .footer-link:hover { color: #fff; }
+
+        @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-20%); } }
+        @keyframes scrollDown { 0% { transform: translateY(-20%); } 100% { transform: translateY(0); } }
+
+        /* --- MOBİL UYUM --- */
+        @media (max-width: 768px) {
+            .navbar { padding: 20px; justify-content: space-between; } 
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .hamburger.active .bar:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); background: var(--neon-green); }
+            .hamburger.active .bar:nth-child(2) { transform: rotate(-45deg) translate(5px, -6px); background: var(--neon-green); }
+
+            .content-container { left: 20px; right: 20px; top: 45%; max-width: 100%; }
+            .socials { left: 20px; bottom: 30px; }
+            
+            .wall-container { width: 140%; right: -50%; opacity: 0.5; gap: 15px; }
+            .wall-overlay { background: linear-gradient(0deg, #050505 15%, rgba(5,5,5,0) 100%); }
+            
+            h1 { font-size: 46px; }
+            .highlight-text { font-size: 46px; }
+            #cookie-banner { bottom: 10px; flex-direction: column; text-align: center; border-radius: 16px; gap: 10px; }
+            #ghostFooter { padding: 15px 20px; flex-direction: column; gap: 10px; align-items: flex-start; padding-bottom: 80px; }
+            .footer-link { margin-left: 0; margin-right: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index" class="brand-logo">MILLIONN<span style="color:#fff">.</span></a>
+        
+        <div class="nav-links">
+            <a href="about" class="nav-link">ABOUT</a>
+            <a href="blog" class="nav-link">BLOG</a> 
+            <a href="privacy" class="nav-link">PRIVACY</a> 
+            <a href="contact" class="nav-link">CONTACT</a> 
+        </div>
+
+        <div class="hamburger" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu-overlay" id="mobileMenu">
+        <a href="about" class="mobile-link">ABOUT</a>
+        <a href="blog" class="mobile-link">BLOG</a> 
+        <a href="privacy" class="mobile-link">PRIVACY</a> 
+        <a href="contact" class="mobile-link">CONTACT</a> 
+    </div>
+
+    <div class="wall-container" id="wallContainer">
+        <div class="wall-column" id="col1"></div>
+        <div class="wall-column" id="col2"></div>
+        <div class="wall-column" id="col3"></div>
+        <div class="wall-column" id="col4"></div>
+    </div>
+
+    <div class="wall-overlay"></div>
+
+    <div class="content-container">
+        <h1>VİRAL PROMPTLAR<br><span class="highlight-text">TEK BİR SAYFADA.</span></h1>
+        <p class="subtitle">Yapay zeka ile üretilmiş profesyonel tasarımları keşfedin. Millionn Studio kapıları açılıyor.</p>
+        
+        <a href="gallery" class="cta-btn">
+            <span>ŞİMDİ BAŞLA</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
+    </div>
+
+    <div class="socials">
+        <a href="https://instagram.com/millionnstudio" target="_blank">
+            <svg class="social-icon" viewBox="0 0 24 24">
+                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.25-3.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5z"/>
+            </svg>
+        </a>
+    </div>
+
+    <div id="cookie-banner">
+        <div class="cookie-text">Deneyimi iyileştirmek için çerez kullanıyoruz.</div>
+        <button id="accept-cookies" class="cookie-btn">Kabul Et</button>
+    </div>
+
+    <footer id="ghostFooter">
+        <div class="footer-text">© 2026 Millionn Studio. All Rights Reserved.</div>
+        <div class="footer-links">
+            <a href="terms" class="footer-text footer-link">Terms</a>
+            <a href="privacy" class="footer-text footer-link">Privacy Policy</a> 
+        </div>
+    </footer>
+
+    <script type="module">
+        import { supabase } from "./configs/supabase.js";
+
+        // --- MOBİL MENÜ ---
+        window.toggleMenu = function() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.querySelector('.hamburger');
+            menu.classList.toggle('active');
+            icon.classList.toggle('active');
+        }
+
+        // --- DİNAMİK DUVAR ---
+        async function initWall() {
+            try {
+                // Veritabanından en son 20 aktif görseli çek
+                let { data: prompts, error } = await supabase
+                    .from('prompts')
+                    .select('image_url')
+                    .eq('status', 'active')
+                    .limit(20);
+
+                if (error || !prompts || prompts.length === 0) {
+                    console.log("Veri yok veya hata, duvar boş kalacak.");
+                    return;
+                }
+
+                // Görselleri karıştır (Shuffle)
+                prompts = prompts.sort(() => Math.random() - 0.5);
+
+                const columns = [
+                    document.getElementById('col1'),
+                    document.getElementById('col2'),
+                    document.getElementById('col3'),
+                    document.getElementById('col4')
+                ];
+
+                // Her sütuna en az 5-6 resim düşecek şekilde dağıt (Döngüsel)
+                let imgIndex = 0;
+                
+                columns.forEach((col) => {
+                    const fragment = document.createDocumentFragment();
+                    for (let i = 0; i < 6; i++) {
+                        const prompt = prompts[imgIndex % prompts.length];
+                        const div = document.createElement('div');
+                        div.className = 'wall-item';
+                        // Loading lazy ile performans koruması
+                        div.innerHTML = `<img src="${prompt.image_url}" alt="AI Art" loading="lazy">`;
+                        fragment.appendChild(div);
+                        imgIndex++;
+                    }
+                    col.appendChild(fragment);
+                });
+
+            } catch (err) {
+                console.error("Duvar yüklenemedi:", err);
+            }
+        }
+
+        initWall();
+
+        // --- HAYALET FOOTER ---
+        let scrollTimer = null;
+        const ghostFooter = document.getElementById('ghostFooter');
+
+        function showFooter() {
+            ghostFooter.classList.add('visible');
+            if(scrollTimer) clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => {
+                ghostFooter.classList.remove('visible');
+            }, 2500);
+        }
+
+        window.addEventListener('wheel', showFooter);
+        window.addEventListener('touchmove', showFooter);
+
+        // --- COOKIE BANNER ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const banner = document.getElementById('cookie-banner');
+            const acceptBtn = document.getElementById('accept-cookies');
+            if (!localStorage.getItem('cookiesAccepted')) {
+                setTimeout(() => { banner.classList.add('show'); }, 1500);
+            }
+            acceptBtn.addEventListener('click', () => {
+                banner.classList.remove('show');
+                localStorage.setItem('cookiesAccepted', 'true');
+            });
+        });
+    </script>
+
+</body>
+</html>

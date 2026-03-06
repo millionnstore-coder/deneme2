@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionn Studio | Blog</title>
+    
+    <link rel="icon" type="image/png" href="assets/img/icons.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2878368346405896" crossorigin="anonymous"></script>
+    
+    <style>
+        :root { --bg-dark: #050505; --text-main: #ffffff; --neon-green: #39ff14; }
+        body { margin: 0; padding: 0; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        .navbar { 
+            position: fixed; top: 0; left: 0; width: 100%; padding: 30px 6%; 
+            display: flex; justify-content: flex-start; align-items: center; 
+            gap: 60px; z-index: 200; box-sizing: border-box; 
+            background: linear-gradient(180deg, #050505 0%, rgba(5,5,5,0) 100%); 
+        }
+        
+        .brand-logo { font-size: 24px; font-weight: 900; letter-spacing: -1px; color: #fff; text-decoration: none; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-link { text-decoration: none; color: #888; font-family: 'Space Mono', monospace; font-size: 12px; text-transform: uppercase; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { color: var(--neon-green); text-shadow: 0 0 10px rgba(57, 255, 20, 0.4); }
+        
+        .page-container { padding: 150px 6% 100px 6%; max-width: 1200px; margin: 0 auto; }
+        .page-title { font-size: 60px; font-weight: 900; letter-spacing: -2px; margin-bottom: 40px; color: #fff; }
+        .highlight { color: var(--neon-green); }
+        
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        .blog-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; text-decoration: none; display: block; }
+        .blog-card:hover { border-color: var(--neon-green); transform: translateY(-5px); }
+        .blog-img { width: 100%; height: 200px; object-fit: cover; background: #222; }
+        .blog-content { padding: 25px; }
+        .blog-date { font-family: 'Space Mono', monospace; font-size: 11px; color: #666; margin-bottom: 10px; display: block; }
+        .blog-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 10px; line-height: 1.4; }
+        .blog-excerpt { font-size: 14px; color: #aaa; line-height: 1.6; }
+        
+        @media (max-width: 768px) { .nav-links { display: none; } .page-title { font-size: 40px; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index" class="brand-logo">MILLIONN<span style="color:#fff">.</span></a>
+        <div class="nav-links">
+            <a href="about" class="nav-link">ABOUT</a>
+            <a href="blog" class="nav-link active">BLOG</a> 
+            <a href="privacy" class="nav-link">PRIVACY</a> 
+            <a href="contact" class="nav-link">CONTACT</a> 
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <h1 class="page-title">GÜNCEL <span class="highlight">DÜŞÜNCELER.</span></h1>
+        
+        <div class="blog-grid">
+            
+            <a href="blog-1" class="blog-card">
+                <img src="https://images.unsplash.com/photo-1675557009383-013f715c613a?q=80&w=800&auto=format&fit=crop" class="blog-img" alt="AI Art">
+                <div class="blog-content">
+                    <span class="blog-date">10 ŞUBAT 2026</span>
+                    <h3 class="blog-title">Yapay Zeka Tasarımı Öldürüyor mu?</h3>
+                    <p class="blog-excerpt">Geleneksel tasarım süreçleri değişiyor. Peki bu bir son mu yoksa yeni bir başlangıç mı?</p>
+                </div>
+            </a>
+
+            <a href="blog-2" class="blog-card">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" class="blog-img" alt="Prompt Engineering">
+                <div class="blog-content">
+                    <span class="blog-date">05 ŞUBAT 2026</span>
+                    <h3 class="blog-title">Mükemmel Prompt Nasıl Yazılır?</h3>
+                    <p class="blog-excerpt">Midjourney ve Nano Banana modellerinde istediğiniz sonucu almanın püf noktaları.</p>
+                </div>
+            </a>
+
+            <a href="blog-3" class="blog-card">
+                <img src="https://images.unsplash.com/photo-1633167606207-d840b5070fc2?q=80&w=800&auto=format&fit=crop" class="blog-img" alt="Trends">
+                <div class="blog-content">
+                    <span class="blog-date">01 ŞUBAT 2026</span>
+                    <h3 class="blog-title">2026 Dijital Sanat Trendleri</h3>
+                    <p class="blog-excerpt">Bu yıl hangi renkler, hangi stiller ve hangi teknolojiler ön planda olacak?</p>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+</body>
+</html>

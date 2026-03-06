@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionn Admin | ANALİZ</title>
+    <link rel="icon" type="image/png" href=".../assets/img/icons.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .content-area { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-dark); }
+        .page-header { margin-bottom: 40px; }
+        .page-title { font-size: 24px; color: #fff; letter-spacing: -1px; }
+
+        /* Analiz Kartları */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .stat-label { color: #666; font-size: 11px; }
+        .stat-value { font-size: 32px; color: #fff; line-height: 1; }
+        
+        .list-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
+        .section-title { font-size: 14px; color: #fff; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .top-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; }
+        .top-item:last-child { border-bottom: none; }
+        .item-info { display: flex; align-items: center; gap: 15px; }
+        .item-rank { color: #444; font-size: 14px; width: 20px; }
+        .item-name { color: #fff; font-size: 13px; }
+        .item-date { color: #666; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <aside class="sidebar">
+            <div class="brand">MILLIONN<span class="dot">.</span></div>
+            <nav class="menu">
+                <a href="tumpromptlar" class="menu-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    TÜM PROMPTLAR
+                </a>
+                
+                <a href="dashboard" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    OLUŞTUR
+                </a>
+
+                <a href="yeni-urun" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    YENİ ÜRÜN
+                </a>
+
+                <a href="silinenler" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    SİLİNENLER
+                </a>
+
+                <a href="taslaklar" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    TASLAKLAR
+                </a>
+
+                <a href="analiz" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                    ANALİZ
+                </a>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">E</div>
+                <div class="info"><span class="name">EMIRHAN</span><span class="role">ADMIN</span></div>
+            </div>
+        </aside>
+
+        <div class="content-area">
+            <div class="page-header">
+                <div class="page-title">GENEL BAKIŞ</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">TOPLAM AKTİF</span>
+                    <span class="stat-value" id="countActive">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">TASLAKLAR</span>
+                    <span class="stat-value" id="countDraft" style="color:#f1c40f">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">SİLİNENLER</span>
+                    <span class="stat-value" id="countDeleted" style="color:#d90429">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">TOPLAM KAYIT</span>
+                    <span class="stat-value" id="countTotal">-</span>
+                </div>
+            </div>
+
+            <div class="list-section">
+                <div class="section-title">
+                    <span>SON YAYINLANANLAR</span>
+                </div>
+                <div id="latestList">
+                    <div style="text-align:center; color:#666; font-size:12px;">YÜKLENİYOR...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from "../configs/supabase.js";
+
+        async function fetchStats() {
+            try {
+                const { data, error } = await supabase.from('prompts').select('status');
+                if(error) throw error;
+                const active = data.filter(i => i.status === 'active').length;
+                const draft = data.filter(i => i.status === 'draft').length;
+                const deleted = data.filter(i => i.status === 'deleted').length;
+                document.getElementById('countActive').innerText = active;
+                document.getElementById('countDraft').innerText = draft;
+                document.getElementById('countDeleted').innerText = deleted;
+                document.getElementById('countTotal').innerText = data.length;
+            } catch(err) { console.error(err); }
+        }
+
+        async function fetchLatest() {
+            try {
+                const { data, error } = await supabase.from('prompts').select('title, created_at').eq('status', 'active').order('created_at', { ascending: false }).limit(5);
+                const list = document.getElementById('latestList');
+                list.innerHTML = '';
+                data.forEach((item, index) => {
+                    const date = new Date(item.created_at).toLocaleDateString('tr-TR');
+                    list.innerHTML += `<div class="top-item"><div class="item-info"><span class="item-rank">0${index+1}</span><span class="item-name">${item.title}</span></div><span class="item-date">${date}</span></div>`;
+                });
+            } catch(err) { console.error(err); }
+        }
+        fetchStats(); fetchLatest();
+    </script>
+</body>
+</html>

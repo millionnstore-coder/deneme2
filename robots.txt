@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Admin panelini arama sonuçlarından gizle
+Disallow: /admin/
+Disallow: /configs/
+
+# Site haritasını Google'a göster
+Sitemap: https://millionnstudio.com/sitemap.xml

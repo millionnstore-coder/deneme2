@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Analizi & Detayı | Millionn Studio</title>
+    
+    <link rel="icon" type="image/png" href="assets/img/icons.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2878368346405896" crossorigin="anonymous"></script>
+
+    <style>
+        :root { --bg-dark: #050505; --text-main: #ffffff; --neon-green: #39ff14; --panel-bg: #0f0f0f; }
+        body { margin: 0; padding: 0; background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+        /* NAVBAR */
+        .navbar { position: fixed; top: 0; left: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: rgba(5,5,5,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); box-sizing: border-box; }
+        .nav-logo { font-weight: 900; letter-spacing: -1px; font-size: 20px; color: #fff; text-decoration: none; }
+        .back-link { color: #888; text-decoration: none; font-size: 12px; font-family: 'Space Mono', monospace; transition: 0.3s; border: 1px solid #333; padding: 8px 16px; border-radius: 50px; }
+        .back-link:hover { color: var(--neon-green); border-color: var(--neon-green); }
+
+        /* LAYOUT */
+        .view-container {
+            max-width: 1200px; margin: 120px auto 50px auto; padding: 0 20px;
+            display: grid; grid-template-columns: 45% 50%; gap: 5%;
+            min-height: 60vh;
+        }
+
+        /* SOL: GÖRSEL & TAGS */
+        .image-wrapper { position: sticky; top: 120px; }
+        .main-img { 
+            width: 100%; border-radius: 12px; border: 1px solid #222; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); display: block;
+            transition: 0.3s;
+        }
+        .main-img:hover { box-shadow: 0 0 30px rgba(57, 255, 20, 0.15); border-color: var(--neon-green); }
+
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        .tag { 
+            font-family: 'Space Mono', monospace; font-size: 11px; color: #888; 
+            background: #111; padding: 5px 10px; border-radius: 4px; border: 1px solid #222;
+        }
+
+        /* SAĞ: DETAYLAR */
+        .info-side { display: flex; flex-direction: column; }
+        
+        .prompt-header { border-bottom: 1px solid #222; padding-bottom: 20px; margin-bottom: 30px; }
+        .prompt-title { font-size: 36px; font-weight: 900; line-height: 1.1; margin: 0 0 10px 0; color: #fff; text-transform: uppercase; letter-spacing: -1px; }
+        .prompt-id { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--neon-green); }
+
+        /* PROMPT KUTUSU */
+        .prompt-box {
+            background: var(--panel-bg); border: 1px solid #333; padding: 25px; border-radius: 12px; margin-bottom: 30px; position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        .prompt-label { font-size: 10px; color: #666; font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .prompt-text { font-family: 'Space Mono', monospace; font-size: 14px; color: #ddd; line-height: 1.6; word-break: break-all; }
+        
+        .copy-btn {
+            position: absolute; top: 20px; right: 20px; background: #222; color: #fff; border: 1px solid #444;
+            padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 11px; font-family: 'Space Mono', monospace;
+            transition: 0.2s;
+        }
+        .copy-btn:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
+
+        /* TEKNİK ANALİZ TABLOSU (PRO GÖRÜNÜM) */
+        .tech-specs {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px;
+        }
+        .spec-item {
+            background: #0a0a0a; padding: 15px; border-radius: 8px; border: 1px solid #222;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .spec-label { font-size: 10px; color: #666; font-family: 'Space Mono', monospace; text-transform: uppercase; }
+        .spec-value { font-size: 14px; color: #fff; font-weight: 600; }
+
+        /* EĞİTİCİ İÇERİK (SEO & STICKINESS) */
+        .educational-content {
+            border-top: 1px solid #222; padding-top: 30px;
+        }
+        .edu-title { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .edu-title::before { content:''; width: 6px; height: 6px; background: var(--neon-green); border-radius: 50%; display: block; }
+        
+        .edu-text { font-size: 14px; color: #888; line-height: 1.8; margin-bottom: 20px; }
+        .edu-list { list-style: none; padding: 0; }
+        .edu-list li { margin-bottom: 10px; font-size: 14px; color: #aaa; position: relative; padding-left: 20px; }
+        .edu-list li::before { content: '>'; position: absolute; left: 0; color: var(--neon-green); font-family: 'Space Mono', monospace; }
+
+
+        /* BENZER İÇERİKLER */
+        .similar-section {
+            max-width: 1200px; margin: 100px auto; padding: 0 20px; border-top: 1px solid #222; padding-top: 60px;
+        }
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+        .section-title { font-size: 24px; font-weight: 900; color: #fff; letter-spacing: -1px; margin: 0; }
+        .section-desc { font-size: 12px; color: #666; font-family: 'Space Mono', monospace; }
+        
+        .similar-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+        }
+        
+        .mini-card {
+            text-decoration: none; display: flex; flex-direction: column; gap: 15px;
+            background: #0a0a0a; padding: 10px; border: 1px solid #1a1a1a; border-radius: 12px;
+            transition: 0.3s;
+        }
+        .mini-card:hover { border-color: var(--neon-green); transform: translateY(-5px); }
+        
+        .mini-img-box {
+            width: 100%; aspect-ratio: 4/5; overflow: hidden; border-radius: 8px; position: relative;
+        }
+        .mini-img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.4s; }
+        .mini-card:hover img { opacity: 1; transform: scale(1.05); }
+        
+        .mini-info { display: flex; flex-direction: column; gap: 5px; }
+        .mini-title { font-size: 13px; font-weight: 700; color: #fff; }
+        .mini-tag { font-size: 10px; color: #666; font-family: 'Space Mono', monospace; }
+
+        @media (max-width: 900px) { 
+            .view-container { grid-template-columns: 1fr; margin-top: 80px; gap: 40px; }
+            .prompt-title { font-size: 28px; }
+            .tech-specs { grid-template-columns: 1fr 1fr; }
+            .similar-grid { grid-template-columns: repeat(2, 1fr); }
+            .image-wrapper { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index" class="nav-logo">MILLIONN<span style="color:#fff">.</span></a>
+        <a href="gallery" class="back-link">← GALERİ</a>
+    </nav>
+
+    <div class="view-container">
+        
+        <div class="image-wrapper">
+            <div id="imgContainer">
+                <div class="loading-placeholder">GÖRSEL YÜKLENİYOR...</div>
+            </div>
+            
+            <div class="tag-cloud">
+                <span class="tag">#AIArt</span>
+                <span class="tag">#Midjourney</span>
+                <span class="tag">#DigitalDesign</span>
+                <span class="tag">#Concept</span>
+                <span class="tag">#MillionnStudio</span>
+            </div>
+        </div>
+
+        <div class="info-side">
+            <div class="prompt-header">
+                <div class="prompt-id" id="pId">ID: LOADING...</div>
+                <h1 class="prompt-title" id="pTitle">...</h1>
+            </div>
+            
+            <div class="prompt-box">
+                <span class="prompt-label">RAW PROMPT</span>
+                <button class="copy-btn" onclick="copyPrompt()">KOPYALA</button>
+                <p class="prompt-text" id="pText">Yükleniyor...</p>
+            </div>
+
+            <div class="tech-specs">
+                <div class="spec-item">
+                    <span class="spec-label">MODEL</span>
+                    <span class="spec-value">Nano Banana</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">ASPECT RATIO</span>
+                    <span class="spec-value">4:5 (Portrait)</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">STYLIZE</span>
+                    <span class="spec-value">High (--s 250)</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">QUALITY</span>
+                    <span class="spec-value">Ultra HD (8K)</span>
+                </div>
+            </div>
+
+            <div class="educational-content">
+                <div class="edu-title">NASIL ÖZELLEŞTİRİLİR?</div>
+                <p class="edu-text">Bu prompt, Millionn Studio'nun "Clean Luxury" estetiğini yansıtmak üzere tasarlanmıştır. Kendi versiyonunuzu oluştururken şunları deneyebilirsiniz:</p>
+                <ul class="edu-list">
+                    <li><strong>Işıklandırma:</strong> Daha dramatik bir etki için "Volumetric lighting" yerine "Neon noir lighting" ekleyin.</li>
+                    <li><strong>Renk Paleti:</strong> Markanıza uygun olması için "Black and White" yerine kendi hex kodlarınızı veya renk isimlerinizi (örn: "Deep Red") promptun başına ekleyin.</li>
+                    <li><strong>Kamera Açısı:</strong> Portre yerine geniş açı istiyorsanız "--ar 16:9" parametresini kullanın.</li>
+                </ul>
+                <p class="edu-text" style="font-size: 12px; color: #555;">*Not: Bu sonuçlar Nano Banana ve Midjourney algoritmalarında test edilmiştir.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="similar-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">KEŞFETMEYE <span style="color:var(--neon-green)">DEVAM ET.</span></h2>
+                <span class="section-desc">Benzer estetiğe sahip diğer tasarımlar.</span>
+            </div>
+        </div>
+        
+        <div class="similar-grid" id="similarGrid">
+            <div class="loading-placeholder" style="height: 200px; grid-column: span 4;">Öneriler Yükleniyor...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from "./configs/supabase.js";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const promptId = urlParams.get('id');
+
+        async function initPage() {
+            if (!promptId) {
+                window.location.href = 'index';
+                return;
+            }
+            
+            await fetchMainDetails();
+            await fetchSimilarPrompts();
+        }
+
+        async function fetchMainDetails() {
+            try {
+                const { data, error } = await supabase
+                    .from('prompts')
+                    .select('*')
+                    .eq('id', promptId)
+                    .single();
+
+                if (error) throw error;
+
+                document.title = `${data.title} | Millionn Studio`; 
+                document.getElementById('pTitle').innerText = data.title;
+                document.getElementById('pText').innerText = data.prompt;
+                document.getElementById('pId').innerText = `ID: #${data.id.toString().padStart(4, '0')}`;
+                
+                const imgContainer = document.getElementById('imgContainer');
+                imgContainer.innerHTML = `<img src="${data.image_url}" class="main-img" alt="${data.title}">`;
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('pTitle').innerText = "HATA";
+                document.getElementById('pText').innerText = "İçerik bulunamadı.";
+            }
+        }
+
+        async function fetchSimilarPrompts() {
+            try {
+                const { data, error } = await supabase
+                    .from('prompts')
+                    .select('id, title, image_url')
+                    .neq('id', promptId)
+                    .eq('status', 'active')
+                    .limit(10); 
+
+                if (error) throw error;
+
+                const grid = document.getElementById('similarGrid');
+                grid.innerHTML = '';
+
+                if (data.length === 0) {
+                    grid.innerHTML = '<p style="color:#666">Başka içerik bulunamadı.</p>';
+                    return;
+                }
+
+                const shuffled = data.sort(() => 0.5 - Math.random()).slice(0, 4);
+
+                shuffled.forEach(item => {
+                    const card = document.createElement('a');
+                    card.href = `view?id=${item.id}`; // Clean URL
+                    card.className = 'mini-card';
+                    card.innerHTML = `
+                        <div class="mini-img-box">
+                            <img src="${item.image_url}" alt="${item.title}">
+                        </div>
+                        <div class="mini-info">
+                            <span class="mini-title">${item.title.toUpperCase()}</span>
+                            <span class="mini-tag">AI GENERATED</span>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error("Benzerler yüklenemedi:", err);
+            }
+        }
+
+        window.copyPrompt = () => {
+            const text = document.getElementById('pText').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerText = "KOPYALANDI!";
+                btn.style.background = "#39ff14";
+                btn.style.color = "#000";
+                setTimeout(() => {
+                    btn.innerText = "KOPYALA";
+                    btn.style.background = "#222";
+                    btn.style.color = "#fff";
+                }, 2000);
+            });
+        }
+
+        initPage();
+    </script>
+
+</body>
+</html>

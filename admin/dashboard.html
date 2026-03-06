@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionn Admin | Prompt Oluştur</title>
+    <link rel="icon" type="image/png" href="../assets/img/icons.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* SAF V2 ARKAPLAN VE MERKEZLEME */
+        body {
+            background-color: #030303;
+            background-image: radial-gradient(circle at center, #0a0a0a 0%, #000 80%);
+            margin: 0; padding: 0; min-height: 100vh;
+        }
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .menu-item { white-space: nowrap; }
+
+        .editor-stage {
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative;
+            padding: 40px;
+        }
+
+        .stage-center {
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+            width: 100%; 
+            max-width: 1200px; 
+            position: relative;
+        }
+
+        /* 4:5 Monolit Konteyner */
+        .boxes-container {
+            display: flex; 
+            gap: 40px; 
+            height: 65vh; 
+            min-height: 500px; 
+            max-height: 800px; 
+            justify-content: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .image-box, .form-box {
+            height: 100%; 
+            aspect-ratio: 4/5; 
+            flex: none; 
+            box-sizing: border-box;
+            background: #050505; 
+            border: 1px solid #1a1a1a; 
+            border-radius: 12px;
+            position: relative;
+        }
+
+        /* SOL: Görsel Yükleme */
+        .image-box {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            overflow: hidden; cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        .image-box:hover { border-color: #333; }
+        
+        .image-box img {
+            width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1; display: none;
+        }
+        .image-box input[type="file"] {
+            position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 3;
+        }
+        
+        .upload-icon-wrapper {
+            display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 2;
+        }
+        .upload-icon-wrapper svg { width: 40px; height: 40px; color: #555; stroke-width: 1.5; }
+        .upload-icon-wrapper span { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 13px; color: #555; text-transform: uppercase; }
+
+        /* SAĞ: Prompt Formu */
+        .form-box {
+            padding: 45px;
+            display: flex; flex-direction: column; gap: 30px;
+        }
+
+        .title-input {
+            width: 100%; background: transparent; border: none; 
+            border-bottom: 1px solid #222; 
+            color: #fff; font-family: 'Inter', sans-serif; font-weight: 900; 
+            font-size: 28px; 
+            padding-bottom: 15px; outline: none; text-transform: uppercase;
+            transition: border-color 0.3s;
+        }
+        .title-input::placeholder { color: #333; }
+        .title-input:focus { border-color: #555; }
+
+        .prompt-textarea {
+            width: 100%; flex: 1; background: transparent; border: none; 
+            color: #ccc; font-family: 'Inter', sans-serif; font-weight: 800; 
+            font-size: 15px; 
+            resize: none; outline: none; text-transform: uppercase;
+            line-height: 1.6;
+        }
+        .prompt-textarea::placeholder { color: #444; }
+
+        /* SAĞDAKİ BUTONLAR */
+        .actions-wrapper {
+            position: fixed; 
+            right: 40px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .action-fab {
+            width: 56px; height: 56px; border-radius: 50%; 
+            background: #0a0a0a; border: 2px solid transparent; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .yellow-btn { color: #f1c40f; border-color: #f1c40f; }
+        .yellow-btn:hover { background: #f1c40f !important; color: #000 !important; transform: scale(1.05); box-shadow: 0 0 20px rgba(241, 196, 15, 0.4); }
+
+        .green-btn { color: #39ff14; border-color: #39ff14; }
+        .green-btn:hover { background: #39ff14 !important; color: #000 !important; transform: scale(1.05); box-shadow: 0 0 20px rgba(57, 255, 20, 0.4); }
+
+        /* Alttaki Rozet */
+        .bottom-badge {
+            margin-top: 40px;
+            background: #050505; border: 1px solid #1a1a1a; border-radius: 30px;
+            padding: 12px 30px; display: inline-flex; align-items: center; gap: 15px;
+        }
+        .badge-text { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 12px; text-transform: uppercase; }
+        .text-white { color: #fff; }
+        .text-gray { color: #888; }
+        .badge-separator { width: 2px; height: 12px; background-color: #333; }
+
+        /* Yükleme Ekranı */
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 999;
+            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+        }
+        .loading-overlay.active { display: flex; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top-color: #39ff14; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div id="loadingText" style="color: #39ff14; font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 2px;">GÖRSEL SIKIŞTIRILIYOR...</div>
+    </div>
+
+    <div class="app-layout">
+        
+        <aside class="sidebar">
+            <div class="brand">MILLIONN<span class="dot">.</span></div>
+            
+            <nav class="menu">
+                <a href="tumpromptlar" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    TÜM PROMPTLAR
+                </a>
+                
+                <a href="dashboard" class="menu-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                        <path d="M12 8v8"></path>
+                        <path d="M8 12h8"></path>
+                    </svg>
+                    OLUŞTUR
+                </a>
+
+                <a href="yeni-urun" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    YENİ ÜRÜN
+                </a>
+
+                <a href="silinenler" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    SİLİNENLER
+                </a>
+
+                <a href="taslaklar" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    TASLAKLAR
+                </a>
+
+                <a href="analiz" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                    </svg>
+                    ANALİZ
+                </a>
+            </nav>
+            
+            <div class="user-profile">
+                <div class="avatar">E</div>
+                <div class="info">
+                    <span class="name">EMIRHAN</span>
+                    <span class="role">ADMIN</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="editor-stage">
+            <form id="createPromptForm" class="stage-center">
+                
+                <div class="boxes-container">
+                    <div class="image-box">
+                        <input type="file" id="imageInput" accept="image/*" required>
+                        <img id="imagePreview" src="" alt="Önizleme">
+                        <div class="upload-icon-wrapper" id="uploadPlaceholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            <span>GÖRSEL YÜKLE</span>
+                        </div>
+                    </div>
+
+                    <div class="form-box">
+                        <input type="text" id="promptTitle" class="title-input" placeholder="BAŞLIK;" required>
+                        <textarea id="promptText" class="prompt-textarea" placeholder="PROMPT METNİNİ BURAYA YAZ..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="actions-wrapper">
+                    <button type="button" class="action-fab yellow-btn" id="btnDraft" title="Taslağa Al">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <button type="submit" class="action-fab green-btn" title="Yayınla">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </button>
+                </div>
+
+                <div class="bottom-badge">
+                    <span class="badge-text text-white">NANO BANANA</span>
+                    <div class="badge-separator"></div>
+                    <span class="badge-text text-gray">4:5</span>
+                </div>
+
+            </form>
+        </main>
+    </div>
+
+    <script type="module">
+        import { supabase } from "../configs/supabase.js";
+
+        const form = document.getElementById('createPromptForm');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+        const btnDraft = document.getElementById('btnDraft');
+
+        // GÜNCEL GÖRSEL SIKIŞTIRMA VE BOYUTLANDIRMA MOTORU
+        async function compressImage(file, quality = 0.8, maxWidth = 1080, maxHeight = 1350) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Akıllı Boyutlandırma: Eğer görsel 1080px'den büyükse, orantıyı bozmadan küçült
+                        if (width > maxWidth || height > maxHeight) {
+                            const ratio = Math.min(maxWidth / width, maxHeight / height);
+                            width = Math.round(width * ratio);
+                            height = Math.round(height * ratio);
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // WebP olarak dışarı aktar
+                        canvas.toBlob((blob) => {
+                            resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".webp", {
+                                type: "image/webp",
+                                lastModified: Date.now()
+                            }));
+                        }, 'image/webp', quality);
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
+        }
+
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    uploadPlaceholder.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Ortak Yükleme Fonksiyonu
+        async function uploadData(statusType) {
+            const title = document.getElementById('promptTitle').value;
+            const model = "NANO BANANA"; 
+            const text = document.getElementById('promptText').value;
+            let file = imageInput.files[0];
+
+            if (!file) {
+                alert("Lütfen bir görsel yükleyin!");
+                return;
+            }
+            if (!title || !text) {
+                alert("Lütfen başlık ve prompt alanlarını doldurun!");
+                return;
+            }
+
+            loadingOverlay.classList.add('active');
+
+            try {
+                // SIKIŞTIRMA İŞLEMİ (Eğer dosya 500KB'den büyükse çalışır)
+                if (file.size > 500 * 1024) {
+                    loadingText.innerText = "GÖRSEL OPTİMİZE EDİLİYOR...";
+                    // Çözünürlüğü max 1080x1350'ye çeker ve kaliteyi %80 ayarlar
+                    file = await compressImage(file, 0.80, 1080, 1350); 
+                }
+
+                loadingText.innerText = "VERİTABANINA İŞLENİYOR...";
+
+                // Yeni WebP uzantılı dosya adı, millions-bucket'ın köküne gidiyor
+                const fileName = `${Math.random()}.webp`;
+                
+                // YENİ BUCKET: millions-bucket
+                const { error: uploadError } = await supabase.storage.from('millions-bucket').upload(fileName, file);
+                if (uploadError) throw uploadError;
+
+                // YENİ BUCKET: millions-bucket
+                const { data: { publicUrl } } = supabase.storage.from('millions-bucket').getPublicUrl(fileName);
+
+                // TABLO KAYDI ('prompt_text' yerine 'prompt' kullanılıyor)
+                const { error: insertError } = await supabase.from('prompts').insert([
+                    { title: title, model: model, prompt: text, image_url: publicUrl, status: statusType }
+                ]);
+                if (insertError) throw insertError;
+
+                // Yükleme türüne göre doğru sayfaya yönlendir
+                if(statusType === 'draft') {
+                    window.location.href = "taslaklar";
+                } else {
+                    window.location.href = "tumpromptlar";
+                }
+
+            } catch (error) {
+                console.error("Yükleme Hatası:", error);
+                alert("Bir hata oluştu: " + error.message);
+                loadingOverlay.classList.remove('active');
+            }
+        }
+
+        // YEŞİL YAYINLA BUTONU (Form submit)
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            uploadData('active');
+        });
+
+        // SARI TASLAK BUTONU
+        btnDraft.addEventListener('click', () => {
+            uploadData('draft');
+        });
+
+    </script>
+</body>
+</html>

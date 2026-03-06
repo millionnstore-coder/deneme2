@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millionn Admin | TASLAKLAR</title>
+    <link rel="icon" type="image/png" href="../assets/img/icons.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .app-layout { display: flex; min-height: 100vh; }
+        .menu-item { white-space: nowrap; } 
+
+        .content-area { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-dark); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .page-title { font-size: 24px; color: #f1c40f; letter-spacing: -1px; font-family: 'Inter', sans-serif; font-weight: 900;}
+
+        .prompt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+
+        /* Kart */
+        .prompt-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; transition: 0.3s; }
+        .prompt-card:hover { border-color: #f1c40f; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.1); }
+        .card-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; background: #111; display: block; opacity: 0.9; }
+        .card-info { padding: 15px; }
+        .card-title { font-size: 13px; color: #fff; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Inter', sans-serif; font-weight: 700;}
+        .card-meta { font-size: 10px; color: #666; display: flex; justify-content: space-between; border-top: 1px solid #222; padding-top: 8px; font-family: 'Inter', sans-serif;}
+        
+        /* Kart Aksiyonları */
+        .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; opacity: 0; transition: 0.2s; z-index: 10; }
+        .prompt-card:hover .card-actions { opacity: 1; }
+        .icon-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.9); border: 1px solid #333; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .publish-btn:hover { background: #39ff14; color: #000; border-color: #39ff14; transform: scale(1.1); }
+        .delete-btn:hover { background: #d90429; color: #fff; border-color: #d90429; transform: scale(1.1); }
+        
+        /* Rozetler */
+        .draft-badge { position: absolute; top: 10px; left: 10px; font-size: 10px; padding: 4px 8px; border-radius: 4px; z-index: 10; font-family: 'Inter', sans-serif; font-weight: 900; color: #000;}
+        .badge-prompt { background: #f1c40f; }
+        .badge-product { background: #39ff14; }
+
+        .empty-state { grid-column: 1 / -1; text-align: center; color: #444; margin-top: 50px; font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 700;}
+        
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 999; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: #0a0a0a; border: 1px solid #333; padding: 30px; border-radius: 16px; width: 350px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); transform: scale(0.9); transition: 0.3s; font-family: 'Inter', sans-serif;}
+        .modal-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 24px; }
+        .modal-title { font-size: 18px; color: #fff; margin-bottom: 10px; font-weight: 900;}
+        .modal-desc { font-size: 12px; color: #888; margin-bottom: 25px; line-height: 1.5; font-weight: 400;}
+        .modal-buttons { display: flex; gap: 10px; }
+        .btn-modal { flex: 1; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 900; border: none; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif;}
+        .btn-cancel { background: #1a1a1a; color: #fff; border: 1px solid #333; }
+        .btn-confirm { color: #fff; } 
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <aside class="sidebar">
+            <div class="brand">MILLIONN<span class="dot">.</span></div>
+            
+            <nav class="menu">
+                <a href="tumpromptlar" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    TÜM PROMPTLAR
+                </a>
+                <a href="dashboard" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+                    OLUŞTUR
+                </a>
+                <a href="yeni-urun" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    YENİ ÜRÜN
+                </a>
+                <a href="silinenler" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    SİLİNENLER
+                </a>
+                <a href="taslaklar" class="menu-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    TASLAKLAR
+                </a>
+                <a href="analiz" class="menu-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                    ANALİZ
+                </a>
+            </nav>
+            
+            <div class="user-profile">
+                <div class="avatar">E</div>
+                <div class="info"><span class="name">EMIRHAN</span><span class="role">ADMIN</span></div>
+            </div>
+        </aside>
+
+        <div class="content-area">
+            <div class="page-header">
+                <div class="page-title">BEKLEYEN TASLAKLAR</div>
+            </div>
+
+            <div class="prompt-grid" id="draftGrid">
+                <div class="empty-state">YÜKLENİYOR...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="actionModal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon">🚀</div>
+            <div class="modal-title" id="modalTitle">BAŞLIK</div>
+            <div class="modal-desc" id="modalDesc">Açıklama</div>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-cancel" onclick="closeModal()">VAZGEÇ</button>
+                <button class="btn-modal btn-confirm" id="confirmActionBtn">ONAYLA</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from "../configs/supabase.js";
+        
+        const grid = document.getElementById('draftGrid');
+        const modal = document.getElementById('actionModal');
+        const mIcon = document.getElementById('modalIcon');
+        const mTitle = document.getElementById('modalTitle');
+        const mDesc = document.getElementById('modalDesc');
+        const mBtn = document.getElementById('confirmActionBtn');
+        
+        let currentAction = null; 
+        let currentId = null;
+        let currentType = null; // 'PROMPT' veya 'PRODUCT'
+
+        async function fetchDrafts() {
+            try {
+                grid.innerHTML = '<div class="empty-state">YÜKLENİYOR...</div>';
+
+                // 1. Prompts taslaklarını çek (status: 'draft')
+                const { data: prompts, error: pError } = await supabase.from('prompts').select('*').eq('status', 'draft');
+                
+                // 2. Products taslaklarını çek (status: 'TASLAK')
+                const { data: products, error: prError } = await supabase.from('products').select('*').eq('status', 'TASLAK');
+
+                if (pError) throw pError;
+                if (prError) throw prError;
+
+                // Verileri birleştir ve türlerini işaretle
+                const allDrafts = [
+                    ...(prompts || []).map(item => ({ ...item, itemType: 'PROMPT' })),
+                    ...(products || []).map(item => ({ ...item, itemType: 'PRODUCT' }))
+                ];
+
+                // Tarihe göre sırala
+                allDrafts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                if (allDrafts.length === 0) {
+                    grid.innerHTML = '<div class="empty-state">HİÇ TASLAK YOK.</div>';
+                    return;
+                }
+
+                grid.innerHTML = '';
+                allDrafts.forEach(item => {
+                    const card = document.createElement('div'); 
+                    card.className = 'prompt-card';
+                    
+                    const badgeClass = item.itemType === 'PROMPT' ? 'badge-prompt' : 'badge-product';
+                    const badgeText = item.itemType === 'PROMPT' ? 'PROMPT' : 'ÜRÜN';
+                    const metaText = item.itemType === 'PROMPT' ? (item.model || 'NANO BANANA') : `${item.price} TL`;
+
+                    card.innerHTML = `
+                        <div class="draft-badge ${badgeClass}">${badgeText}</div>
+                        <div class="card-actions">
+                            <div class="icon-btn publish-btn" title="Yayınla">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </div>
+                            <div class="icon-btn delete-btn" title="Çöpe At">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </div>
+                        </div>
+                        <img src="${item.image_url}" class="card-img">
+                        <div class="card-info">
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-meta">
+                                <span>${metaText}</span>
+                                <span>${item.itemType === 'PROMPT' ? (item.ratio || '4:5') : 'STORE'}</span>
+                            </div>
+                        </div>`;
+
+                    card.querySelector('.publish-btn').onclick = () => openModal('publish', item.id, item.itemType);
+                    card.querySelector('.delete-btn').onclick = () => openModal('delete', item.id, item.itemType);
+                    grid.appendChild(card);
+                });
+            } catch (err) { 
+                console.error(err); 
+                grid.innerHTML = '<div class="empty-state">VERİ ÇEKİLİRKEN HATA OLUŞTU.</div>';
+            }
+        }
+
+        window.openModal = (action, id, type) => {
+            currentAction = action; 
+            currentId = id; 
+            currentType = type;
+            modal.style.display = 'flex';
+            
+            setTimeout(() => { modal.querySelector('.modal-box').style.transform = 'scale(1)'; }, 10);
+
+            if (action === 'publish') { 
+                mIcon.innerHTML = '🚀'; 
+                mIcon.style.background = 'rgba(57, 255, 20, 0.1)'; 
+                mIcon.style.color = '#39ff14'; 
+                mIcon.style.border = '1px solid rgba(57, 255, 20, 0.2)'; 
+                mTitle.innerText = type === 'PROMPT' ? "PROMPT YAYINLANSIN MI?" : "ÜRÜN VİTRİNE ÇIKSIN MI?"; 
+                mDesc.innerText = "Öğe artık ana sitede görünür olacak."; 
+                mBtn.innerText = "EVET, YAYINLA"; 
+                mBtn.style.background = '#39ff14'; 
+                mBtn.style.color = '#000'; 
+            } 
+            else { 
+                mIcon.innerHTML = '🗑️'; 
+                mIcon.style.background = 'rgba(217, 4, 41, 0.1)'; 
+                mIcon.style.color = '#d90429'; 
+                mIcon.style.border = '1px solid rgba(217, 4, 41, 0.2)'; 
+                mTitle.innerText = "SİLİNSİN Mİ?"; 
+                mDesc.innerText = "Bu işlem geri alınamaz."; 
+                mBtn.innerText = "EVET, SİL"; 
+                mBtn.style.background = '#d90429'; 
+                mBtn.style.color = '#fff'; 
+            }
+        }
+
+        window.closeModal = () => { 
+            modal.style.display = 'none'; 
+            currentAction = null; 
+            currentId = null; 
+            currentType = null;
+        }
+
+        mBtn.onclick = async () => {
+            if (!currentId) return; 
+            mBtn.innerText = "İŞLENİYOR...";
+            
+            try {
+                const tableName = currentType === 'PROMPT' ? 'prompts' : 'products';
+                
+                if (currentAction === 'publish') {
+                    const newStatus = currentType === 'PROMPT' ? 'active' : 'YAYINDA';
+                    await supabase.from(tableName).update({ status: newStatus }).eq('id', currentId);
+                } else {
+                    // Kalıcı silme
+                    await supabase.from(tableName).delete().eq('id', currentId);
+                }
+                
+                closeModal(); 
+                fetchDrafts();
+            } catch (err) { 
+                alert(err.message); 
+                closeModal(); 
+            }
+        }
+
+        fetchDrafts();
+    </script>
+</body>
+</html>
